@@ -18,18 +18,6 @@ function filterLineNumbers(exprList)
     return filter(x -> typeof(x) != LineNumberNode, exprList)
 end
 
-function substituteReturnStatement(exprList, index)
-    returnAssignExp = copy(exprList[index])
-    returnAssignExp.head = :(=)
-    pushfirst!(returnAssignExp.args, returnAssignmentName)
-    insert!(exprList, index, returnAssignExp)
-    index+=1
-    exprList[index].args = [returnAssignmentName]
-    removedReturnStatement = splice!(exprList, index, ensureList)
-    insert!(exprList, index + length(ensureList), removedReturnStatement)
-    return nothing
-end
-
 function setupEdges(functionName :: String)
     start = edgeCheckExpressions(functionName, requirements)
     finish = edgeCheckExpressions(functionName, ensures)
@@ -68,7 +56,6 @@ end
 
 function checkExpressionEntry(exprList)
     if any(x -> (typeof(x) != Symbol && typeof(x) != Expr), exprList)
-        println(exprList)
         throw(ArgumentError(string("Acceptable types are Symbol and Expr, found: \n",
               string([typeof(x) for x in exprList]))))
     end

@@ -13,8 +13,9 @@ end
 @require (a > 0) (b > a) c
 @ensure (b < a) (a > b) !c
 @contract function flawedEnsureFoo(a :: Int64, b :: Int64, c :: Bool)
-    a += 2
+    a -= 2
     b += 2
+    c = true
     return
 end
 
@@ -22,10 +23,28 @@ end
     @test_throws ContractBreachException foo(-1, 10, true)
     @test_throws ContractBreachException foo(5, 2, true)
     @test_throws ContractBreachException foo(5, 10, false)
+   
+    @test_throws ContractBreachException flawedEnsureFoo(10, 100, true)
+    @test_throws ContractBreachException flawedEnsureFoo(5, 100, true)
+    @test_throws ContractBreachException flawedEnsureFoo(2, 100, true)
+end
 
-    @test_throws ContractBreachException foo(100, 10, true)
-    @test_throws ContractBreachException foo(5, -100, true)
-    @test_throws ContractBreachException foo(5, -100, false)
+@testset "Contract Breach Description" begin
+    try
+        foo(-1, 10, true)
+    catch e
+        b = IOBuffer()
+        showerror(b, e)
+        @test String(take!(b)) == "Breach on Requirement Expression: a > 0"
+    end
+
+    try
+        flawedEnsureFoo(10, 100, true)
+    catch e
+        c = IOBuffer()
+        showerror(c, e)
+        @test String(take!(c)) == "Breach on Ensure Expression: b < a"
+    end
 end
 
 @require (b > 0)
