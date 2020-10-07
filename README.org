@@ -265,12 +265,12 @@ processArr([1, 2, 3, -1])
 
 Since there could probably be variables in your function with =result= as name,
 there is an extra sub-agreement in the contract block to change the =result=
-name. E. g.:
+name. This sub-agreement is the attribution to the name =returnName=, e. g.:
 
 #+BEGIN_SRC julia :session dbc :result output :exports both
 # Like the last example but with a twist
 @contract begin
-    resultName = returnValue
+    returnName = returnValue
     ensure(returnValue > 0)
     function newProcessArr(arr :: Array{Int64, 1})
         result = 0

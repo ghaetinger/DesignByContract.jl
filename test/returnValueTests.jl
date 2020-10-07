@@ -9,7 +9,7 @@ end
 @contract begin
     require(b > 0)
     ensure(toReturn >= 1)
-    resultName = toReturn
+    returnName = toReturn
     function fixedDiv(a :: Int64, b :: Int64)
         return a / b
     end
@@ -23,6 +23,51 @@ end
     @test_throws ContractBreachException fixedDiv(1, 0)
     @test_throws ContractBreachException fixedDiv(1, 2)
     @test fixedDiv(10, 2) == 5
+end
+
+wrongReturnNameInt = quote
+    @contract begin
+        returnName = 2
+        function stub()
+            return 2
+        end
+    end
+end
+
+wrongReturnNameBool = quote
+    @contract begin
+        returnName = true
+        function stub()
+            return 2
+        end
+    end
+end
+
+wrongReturnNameExpr = quote
+    @contract begin
+        returnName = x -> x+2
+        function stub()
+            return 2
+        end
+    end
+end
+
+@testset "new ReturnName Type" begin
+    try
+        eval(wrongReturnNameInt)
+    catch e
+        @test typeof(e.error) == ArgumentError
+    end
+    try
+        eval(wrongReturnNameBool)
+    catch e
+        @test typeof(e.error) == ArgumentError
+    end
+    try
+        eval(wrongReturnNameExpr)
+    catch e
+        @test typeof(e.error) == ArgumentError
+    end
 end
 
 @contract begin

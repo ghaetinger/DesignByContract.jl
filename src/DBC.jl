@@ -15,11 +15,11 @@ end
 # Return setup functions
 
 function findCustomReturnName(expression)
-    returnNameExpr = getAgreementsFromExpressions(:resultName, :(=), expression)
+    returnNameExpr = getAgreementsFromExpressions(:returnName, :(=), expression)
     if length(returnNameExpr) == 0
         return returnAssignmentName
-    elseif length(returnNameExpr) != 1
-        throw(AttributeError("Custom Return names should be added in the format 'resultName = \$customName'"))
+    elseif length(returnNameExpr) != 1 || typeof(returnNameExpr[1]) != Symbol
+        throw(ArgumentError("Custom Return names should be added in the format 'resultName = \$customName'"))
     else
         return returnNameExpr[1]
     end
