@@ -1,5 +1,6 @@
 module DBC
 include("./agreements.jl")
+using MacroTools
 
 export @contract, ContractBreachException
 
@@ -13,11 +14,6 @@ end
 
 # Return setup functions
 
-function getReturnPoints(exprList)
-    return filter(x -> (typeof(exprList[x]) == Expr &&
-                        exprList[x].head == :return), [(1:length(exprList))...])
-end
-
 function findCustomReturnName(expression)
     returnNameExpr = getAgreementsFromExpressions(:resultName, :(=), expression)
     if length(returnNameExpr) == 0
@@ -26,32 +22,6 @@ function findCustomReturnName(expression)
         throw(AttributeError("Custom Return names should be added in the format 'resultName = \$customName'"))
     else
         return returnNameExpr[1]
-    end
-end
-
-function produceReturnVariableAssign(returnExpr :: Expr)
-    returnAssignExpr = copy(returnExpr)
-    returnAssignExpr.head = :(=)
-    return returnAssignExpr
-end
-
-function produceNewReturnExpr(returnName :: Symbol)
-    return :(return $returnName)
-end
-
-function setupReturn!(exprList, newExpressions,
-                      index :: Int64, returnName :: Symbol)
-    returnAssignExpr = produceReturnVariableAssign(exprList[index])
-    pushfirst!(returnAssignExpr.args, returnName)
-    insert!(exprList, index, returnAssignExpr)
-    splice!(exprList, index+1, newExpressions)
-    insert!(exprList, index+1+length(newExpressions), produceNewReturnExpr(returnName))
-end
-
-function setupReturnSet!(exprList, returnIndices :: Array{Int64},
-                        newExpressions, returnName :: Symbol)
-    for returnIndex ∈ returnIndices
-        setupReturn!(exprList, newExpressions, returnIndex, returnName)
     end
 end
 
@@ -84,8 +54,15 @@ end
 
 function addEnsures!(functionBody :: Expr, agreement :: Agreement, returnName :: Symbol)
     finish = createCheckExpressions(agreement.functionName, agreement)
-    returnIndices = getReturnPoints(functionBody.args)
-    setupReturnSet!(functionBody.args, returnIndices, finish, returnName)
+    push!(finish, :(return $returnName))
+    newFunctionBody = MacroTools.postwalk(functionBody) do x
+        @capture(x, return a_) || return x
+        newReturn = Expr(:block)
+        newReturn.args = vcat([:($returnName = $a)], finish)
+        return newReturn
+    end
+    functionBody.args = newFunctionBody.args
+    functionBody.head = newFunctionBody.head
 end
 
 generateEnsureFunction(returnName :: Symbol) = (x, y) -> addEnsures!(x, y, returnName)

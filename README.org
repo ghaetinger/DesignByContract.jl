@@ -205,11 +205,111 @@ arr
 :  [2] top-level scope at In[27]:3
 :END:
 
-*** TODO Return contract
+*** Return contract
+
+It's important to make sure there are =return= expressions where you want to
+return a value. This is both to make sure you understand the endpoints of the
+function and to enable the macro =@contract= to see them as well. This helps
+when you want to ensure the result value. Having this said, we can use the name
+=result= inside =ensure= expressions to test the returning value. The following
+is an example:
+
+#+BEGIN_SRC julia :session dbc :result output :exports both
+# returns the value of a sum or product operation in
+# an integer array depending on the parity of it's size.
+# Says the final value is positive
+@contract begin
+    ensure(result > 0)
+    function processArr(arr :: Array{Int64, 1})
+        if length(arr) % 2 == 0
+            return prod(arr)
+        else
+            return sum(arr)
+        end
+    end
+end
+#+END_SRC
+
+#+RESULTS:
+: processArr (generic function with 1 method)
+
+#+BEGIN_SRC julia :session dbc :result output :exports both
+processArr([1, 2, 3])
+#+END_SRC
+
+#+RESULTS:
+: 6
+
+#+BEGIN_SRC julia :session dbc :result output :exports both
+processArr([2, 2, 2, 2])
+#+END_SRC
+
+#+RESULTS:
+: 16
+
+#+BEGIN_SRC julia :session dbc :result output :exports both
+processArr([1, 2, 3, -1])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# [goto error]
+: Breach on Ensure Expression 'result > 0' in function 'processArr'
+:
+: Stacktrace:
+:  [1] processArr(::Array{Int64,1}) at ./In[5]:8
+:  [2] top-level scope at In[8]:1
+:END:
+
+*** Return name
+
+Since there could probably be variables in your function with =result= as name,
+there is an extra sub-agreement in the contract block to change the =result=
+name. E. g.:
+
+#+BEGIN_SRC julia :session dbc :result output :exports both
+# Like the last example but with a twist
+@contract begin
+    resultName = returnValue
+    ensure(returnValue > 0)
+    function newProcessArr(arr :: Array{Int64, 1})
+        result = 0
+        if length(arr) % 2 == 0
+            result = prod(arr)
+        else
+            result = sum(arr)
+        end
+        return -1 * result
+    end
+end
+#+END_SRC
+
+#+RESULTS:
+: newProcessArr (generic function with 1 method)
+
+#+BEGIN_SRC julia :session dbc :result output :exports both
+newProcessArr([1, 2, 3, -1])
+#+END_SRC
+
+#+RESULTS:
+: 6
+
+#+BEGIN_SRC julia :session dbc :result output :exports both
+newProcessArr([2, 2, 2, 2])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# [goto error]
+: Breach on Ensure Expression 'returnValue > 0' in function 'newProcessArr'
+:
+: Stacktrace:
+:  [1] newProcessArr(::Array{Int64,1}) at ./In[14]:12
+:  [2] top-level scope at In[16]:1
+:END:
 
 
 * TODOs
-** [ ] Fix "return" lookup to find nested "returns"
 ** [ ] Add function invariant
 ** [ ] Add loop invariant
 ** [ ] Add old value call

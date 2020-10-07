@@ -31,10 +31,6 @@ function (agreement::Agreement)(functionBody::Expr)
     agreement.processFunction(functionBody, agreement)
 end
 
-function Base.empty!(agreement :: Agreement)
-    empty!(agreement.expressions)
-end
-
 struct ContractBreachException <: Exception
     functionName :: String
     expression :: String
