@@ -1,0 +1,63 @@
+        - @enum AgreementType begin
+        -     require
+        -     ensure
+        -     funcInvariant
+        - end
+        - 
+        - agreementBreachMessage = Dict(
+        -                           require => "Breach on Requirement Expression",
+        -                           ensure => "Breach on Ensure Expression",
+        -                           funcInvariant => "Breach on Function Invariant Expression",
+        -                           )
+        - 
+        - mutable struct Agreement
+       21     type :: AgreementType
+        -     expressions :: Array{Union{Expr, Symbol}}
+        -     breachMessage :: String
+        -     processFunction
+        -     functionName :: String
+        - end
+        - 
+        - function Agreement(agreementType :: AgreementType,
+        -                    addChecksFunction,
+        -                    functionName :: String) :: Agreement
+       21     Agreement(agreementType, [],
+        -               agreementBreachMessage[agreementType],
+        -               addChecksFunction,
+        -               functionName)
+        - end
+        - 
+        - function (agreement::Agreement)(functionBody::Expr)
+       21     agreement.processFunction(functionBody, agreement)
+        - end
+        - 
+        - function Base.empty!(agreement :: Agreement)
+        -     empty!(agreement.expressions)
+        - end
+        - 
+        - struct ContractBreachException <: Exception
+       11     functionName :: String
+        -     expression :: String
+        -     breachMessage :: String
+        - end
+        - 
+        - function Base.showerror(io::IO, e::ContractBreachException)
+        2     print(io, e.breachMessage, " '", e.expression, "' in function '", e.functionName, "'")
+        - end
+        - 
+        - function contractHolds(functionName :: String, agreement :: Agreement, expressionIndex :: Int64)
+       23     contractExpression = agreement.expressions[expressionIndex]
+       25     stringContractExpression = string(contractExpression)
+       23     exceptionThrownExpression = :(throw(
+        -         ContractBreachException($functionName,
+        -                                 $stringContractExpression,
+        -                                 $(agreement.breachMessage))
+        -     ))
+        - 
+       23     checkExpression = Expr(:block)
+       23     checkExpression.head = :if
+       25     checkExpression.args = [agreement.expressions[expressionIndex],
+        -                             :nothing,
+        -                             exceptionThrownExpression]
+       23     return checkExpression
+        - end

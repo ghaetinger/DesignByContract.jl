@@ -1,31 +1,17 @@
 module DBC
-export @require, @ensure, @contract, setReturnName, ContractBreachException
-
 include("./agreements.jl")
 
-requirements = Agreement(require, [], agreementBreachMessage[:require])
-ensures = Agreement(ensure, [], agreementBreachMessage[:ensure])
-funcInvariants = Agreement(funcInvariant, [], agreementBreachMessage[:funcInvariant])
+export @contract, setReturnName, ContractBreachException
 
 returnAssignmentName = :result
 
-
-function edgeCheckExpressions(functionName :: String, agreement :: Agreement)
+function createCheckExpressions(functionName :: String, agreement :: Agreement)
     return [contractHolds(functionName, agreement, i) for i in 1:length(agreement.expressions)]
 end
 
-function filterLineNumbers(exprList)
-    return filter(x -> typeof(x) != LineNumberNode, exprList)
-end
-
-function setupEdges(functionName :: String)
-    start = edgeCheckExpressions(functionName, requirements)
-    finish = edgeCheckExpressions(functionName, ensures)
-    return start, finish
-end
-
 function getReturnPoints(exprList)
-    return filter(x -> exprList[x].head == :return, [(1:length(exprList))...])
+    return filter(x -> (typeof(exprList[x]) == Expr &&
+                        exprList[x].head == :return), [(1:length(exprList))...])
 end
 
 function produceReturnVariableAssign(returnExpr :: Expr)
@@ -34,23 +20,23 @@ function produceReturnVariableAssign(returnExpr :: Expr)
     return returnAssignExpr
 end
 
-function produceNewReturnExpr()
-    return :(return $returnAssignmentName)
+function produceNewReturnExpr(returnName :: Symbol)
+    return :(return $returnName)
 end
 
 function setupReturn!(exprList, newExpressions,
-                      index :: Int64)
+                      index :: Int64, returnName :: Symbol)
     returnAssignExpr = produceReturnVariableAssign(exprList[index])
-    pushfirst!(returnAssignExpr.args, returnAssignmentName)
+    pushfirst!(returnAssignExpr.args, returnName)
     insert!(exprList, index, returnAssignExpr)
     splice!(exprList, index+1, newExpressions)
-    insert!(exprList, index+1+length(newExpressions), produceNewReturnExpr())
+    insert!(exprList, index+1+length(newExpressions), produceNewReturnExpr(returnName))
 end
 
-function setupReturnSet!(returnIndices :: Array{Int64}, exprList,
-                        newExpressions)
+function setupReturnSet!(exprList, returnIndices :: Array{Int64},
+                        newExpressions, returnName :: Symbol)
     for returnIndex ∈ returnIndices
-        setupReturn!(exprList, newExpressions, returnIndex)
+        setupReturn!(exprList, newExpressions, returnIndex, returnName)
     end
 end
 
@@ -61,35 +47,79 @@ function checkExpressionEntry(exprList)
     end
 end
 
-macro require(exprList...)
-    global requirements
-    checkExpressionEntry(exprList)
-    requirements.expressions = [exprList...]
+function getAgreementsFromExpressions(agreementType :: Symbol, head :: Symbol, expressions)
+    conditions = []
+    for expr in expressions
+        if typeof(expr) == Expr &&
+            expr.head == head && expr.args[1] == agreementType
+            append!(conditions, expr.args[2:end])
+        end
+    end
+    return conditions
+end
+
+function lookAndFillType(agreement :: Agreement,
+                         topExpr)
+    typeSym = Symbol(agreement.type)
+    conditions = getAgreementsFromExpressions(typeSym, :call, topExpr.args)
+    append!(agreement.expressions, conditions)
+end
+
+function addRequirements!(functionBody::Expr, agreement::Agreement)
+    start = createCheckExpressions(agreement.functionName, agreement)
+    pushfirst!(functionBody.args, start...)
+end
+
+function addEnsures!(functionBody::Expr, agreement::Agreement, returnName :: Symbol)
+    finish = createCheckExpressions(agreement.functionName, agreement)
+    returnIndices = getReturnPoints(functionBody.args)
+    setupReturnSet!(functionBody.args, returnIndices, finish, returnName)
+end
+
+function addFuncInvariants!(functionBody::Expr, agreement::Agreement)
     return nothing
 end
 
-macro ensure(exprList...)
-    global ensures
-    checkExpressionEntry(exprList)
-    ensures.expressions = [exprList...]
-    return nothing
+function findCustomReturnName(expression)
+    returnNameExpr = getAgreementsFromExpressions(:resultName, :(=), expression)
+    if length(returnNameExpr) == 0
+        return returnAssignmentName
+    elseif length(returnNameExpr) != 1
+        throw(AttributeError("Custom Return names should be added in the format 'resultName = \$customName'"))
+    else
+        return returnNameExpr[1]
+    end
 end
 
-macro contract(expr :: Expr)
-    @assert expr.head == :function
-    body, finish = setupEdges(string(expr.args[1].args[1]))
-    append!(body, filterLineNumbers(expr.args[2].args))
-    returnIndices = getReturnPoints(body)
-    setupReturnSet!(returnIndices, body, finish)
-    expr.args[2].args = body
-    empty!(requirements)
-    empty!(ensures)
-    expr |> esc
+function seekFunctionDefinition(expressions)
+    for expr ∈ expressions
+        if typeof(expr) == Expr && expr.head == :function
+            return expr
+        end
+    end
 end
 
-function setReturnName(newName :: Symbol)
-    global returnAssignmentName
-    returnAssignmentName = newName
+macro contract(expr)
+    @assert expr.head == :block
+    functionExpr = seekFunctionDefinition(expr.args)
+    @assert typeof(functionExpr) == Expr "Check the arguments previous to the function declaration!"
+    functionName = string(functionExpr.args[1].args[1])
+    functionBody = functionExpr.args[2]
+
+    returnName = findCustomReturnName(expr.args)
+
+    agreements = Dict(
+        require => Agreement(require, addRequirements!, functionName),
+        ensure => Agreement(ensure, (x, y) -> addEnsures!(x, y, returnName), functionName),
+        funcInvariant => Agreement(funcInvariant, addFuncInvariants!, functionName),
+    )
+
+    for agreement in values(agreements)
+        lookAndFillType(agreement, expr)
+        agreement(functionBody)
+    end
+
+    return functionExpr |> esc
 end
 
 end # module
