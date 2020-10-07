@@ -1,11 +1,218 @@
+#+PROPERTY: header-args:jupyter-julia  :session dbc
 #+TITLE:  DBC.jl
 #+AUTHOR: Guilherme Gomes Haetinger
 
 [[https://travis-ci.com/github/GuilhermeHaetinger/DBC.jl][https://travis-ci.com/GuilhermeHaetinger/DBC.jl.svg?branch=main&status=passed]]
 [[https://codecov.io/gh/GuilhermeHaetinger/DBC.jl][https://codecov.io/gh/GuilhermeHaetinger/DBC.jl/branch/main/graph/badge.svg]]
 
-* TODO Description
-* TODO Installation
-* TODO Usage
-* TODO Author
-* TODO Todos
+* Description
+This package provides an interface for *Design By Contract* programming in
+Julia. The method for software design was first introduced in the *Eiffel*
+programming language and has been adapted to other production languages such as
+Java and C++. It has since been praised by producing readable, easily testable
+code.
+
+*Design By Contract* prescribes formal conditions to the execution of a method.
+One must define the prerequisites and post-conditions expected so that the
+function is better described and, thus, contributes to the general safety of the
+program's state.
+
+Our goal is to produce an alternative package to *Contracts.jl*, which seems to
+have been discontinued.
+
+* Installation
+This package hasn't been added to the main Julia repository yet. To use it, one
+must run:
+
+#+BEGIN_SRC
+pkg> add https://github.com/GuilhermeHaetinger/DBC.jl
+#+END_SRC
+
+* Usage
+
+*DBC.jl* works by processing a block containing the prerequisites,
+post-conditions and the contract's function.
+
+** Prerequisites
+
+Prerequisites have the unique goal of filtering the arguments of the function
+and blocking invalid ones that come from different parts of a program. This can
+help finding errors in other functionalities as soon as possible. Here is an
+example of a function that has prerequisites breached:
+
+#+BEGIN_SRC jupyter-julia
+using DBC
+
+maxDictSize = 2
+
+# Function for adding a variable to a string-key dictionary with a non-null key
+@contract begin
+    require(length(dict) < maxDictSize, length(key) > 0)
+    function putItem!(dict :: Dict{String, Any}, key :: String, item)
+        dict[key] = item
+        return nothing
+    end
+end
+#+END_SRC
+
+#+RESULTS:
+: putItem! (generic function with 1 method)
+
+#+BEGIN_SRC jupyter-julia
+fruits = Dict{String, Any}()
+
+putItem!(fruits, "apple", :red)
+fruits
+#+END_SRC
+
+#+RESULTS:
+: Dict{String,Any} with 1 entry:
+:   "apple" => :red
+
+#+BEGIN_SRC jupyter-julia
+putItem!(fruits, "blueberry", :blue)
+fruits
+#+END_SRC
+
+#+RESULTS:
+: Dict{String,Any} with 2 entries:
+:   "apple"     => :red
+:   "blueberry" => :blue
+
+#+BEGIN_SRC jupyter-julia
+putItem!(fruits, "", :purple)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# [goto error]
+: Breach on Requirement Expression 'length(dict) < maxDictSize' in function 'putItem!'
+:
+: Stacktrace:
+:  [1] putItem! at ./In[15]:0 [inlined] (repeats 2 times)
+:  [2] top-level scope at In[18]:1
+:END:
+
+#+BEGIN_SRC jupyter-julia
+delete!(fruits, "blueberry")
+putItem!(fruits, "", :purple)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# [goto error]
+: Breach on Requirement Expression 'length(key) > 0' in function 'putItem!'
+:
+: Stacktrace:
+:  [1] putItem! at ./In[15]:0 [inlined] (repeats 2 times)
+:  [2] top-level scope at In[19]:2
+:END:
+
+** Post-conditions
+
+Post-conditions work to find errors inside the contracted function. It is also
+used to find errors easily and as soon as possible. Here is an example of a
+function that breaches its post-conditions:
+
+#+BEGIN_SRC jupyter-julia
+
+minVal = 5
+
+# Function that adds 1 to the values
+# of an int array with len > 5
+# and guarantees the sum of its elements
+# will be > minVal
+@contract begin
+    require(length(arr) >= 5)
+    ensure(sum(arr) > minVal)
+    function incrArr!(arr :: Array{Int64, 1})
+        for index in 1:length(arr)
+            arr[index] += 1
+        end
+        return nothing
+    end
+end
+#+END_SRC
+
+#+RESULTS:
+: incrArr! (generic function with 1 method)
+
+#+BEGIN_SRC jupyter-julia
+arr = collect(1:5)
+display(arr)
+incrArr!(arr)
+arr
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: 5-element Array{Int64,1}:
+:  1
+:  2
+:  3
+:  4
+:  5
+: 5-element Array{Int64,1}:
+:  2
+:  3
+:  4
+:  5
+:  6
+:END:
+
+#+BEGIN_SRC jupyter-julia
+arr = collect(ones(Int64, 5))
+display(arr)
+incrArr!(arr)
+arr
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: 5-element Array{Int64,1}:
+:  1
+:  1
+:  1
+:  1
+:  1
+: 5-element Array{Int64,1}:
+:  2
+:  2
+:  2
+:  2
+:  2
+:END:
+
+#+BEGIN_SRC jupyter-julia
+arr = collect(-1 .* ones(Int64, 5))
+display(arr)
+incrArr!(arr)
+arr
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: 5-element Array{Int64,1}:
+:  -1
+:  -1
+:  -1
+:  -1
+:  -1
+# [goto error]
+: Breach on Ensure Expression 'sum(arr) > minVal' in function 'incrArr!'
+:
+: Stacktrace:
+:  [1] incrArr!(::Array{Int64,1}) at ./In[24]:15
+:  [2] top-level scope at In[27]:3
+:END:
+
+*** TODO Return contract
+
+
+* TODOs
+** [ ] Fix "return" lookup to find nested "returns"
+** [ ] Add function invariant
+** [ ] Add loop invariant
+** [ ] Add old value call
+** [ ] Enable assertion disabling for efficiency
+** [ ] Add Docstrings
