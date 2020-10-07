@@ -1,4 +1,3 @@
-#+PROPERTY: header-args:julia  :session dbc :result replace :exports both
 #+TITLE:  DBC.jl
 #+AUTHOR: Guilherme Gomes Haetinger
 
@@ -40,7 +39,7 @@ and blocking invalid ones that come from different parts of a program. This can
 help finding errors in other functionalities as soon as possible. Here is an
 example of a function that has prerequisites breached:
 
-#+BEGIN_SRC julia
+#+BEGIN_SRC julia :session dbc :result output :exports both
 using DBC
 
 maxDictSize = 2
@@ -58,7 +57,7 @@ end
 #+RESULTS:
 : putItem! (generic function with 1 method)
 
-#+BEGIN_SRC julia
+#+BEGIN_SRC julia :session dbc :result output :exports both
 fruits = Dict{String, Any}()
 
 putItem!(fruits, "apple", :red)
@@ -69,7 +68,7 @@ fruits
 : Dict{String,Any} with 1 entry:
 :   "apple" => :red
 
-#+BEGIN_SRC julia
+#+BEGIN_SRC julia :session dbc :result output :exports both
 putItem!(fruits, "blueberry", :blue)
 fruits
 #+END_SRC
@@ -79,7 +78,7 @@ fruits
 :   "apple"     => :red
 :   "blueberry" => :blue
 
-#+BEGIN_SRC julia
+#+BEGIN_SRC julia :session dbc :result output :exports both
 putItem!(fruits, "", :purple)
 #+END_SRC
 
@@ -93,7 +92,7 @@ putItem!(fruits, "", :purple)
 :  [2] top-level scope at In[18]:1
 :END:
 
-#+BEGIN_SRC julia
+#+BEGIN_SRC julia :session dbc :result output :exports both
 delete!(fruits, "blueberry")
 putItem!(fruits, "", :purple)
 #+END_SRC
@@ -114,7 +113,7 @@ Post-conditions work to find errors inside the contracted function. It is also
 used to find errors easily and as soon as possible. Here is an example of a
 function that breaches its post-conditions:
 
-#+BEGIN_SRC julia
+#+BEGIN_SRC julia :session dbc :result output :exports both
 
 minVal = 5
 
@@ -137,7 +136,7 @@ end
 #+RESULTS:
 : incrArr! (generic function with 1 method)
 
-#+BEGIN_SRC julia
+#+BEGIN_SRC julia :session dbc :result output :exports both
 arr = collect(1:5)
 display(arr)
 incrArr!(arr)
@@ -160,7 +159,7 @@ arr
 :  6
 :END:
 
-#+BEGIN_SRC julia
+#+BEGIN_SRC julia :session dbc :result output :exports both
 arr = collect(ones(Int64, 5))
 display(arr)
 incrArr!(arr)
@@ -183,7 +182,7 @@ arr
 :  2
 :END:
 
-#+BEGIN_SRC julia
+#+BEGIN_SRC julia :session dbc :result output :exports both
 arr = collect(-1 .* ones(Int64, 5))
 display(arr)
 incrArr!(arr)
