@@ -1,4 +1,4 @@
-#+PROPERTY: header-args:jupyter-julia  :session dbc
+#+PROPERTY: header-args:julia  :session dbc :result replace :exports both
 #+TITLE:  DBC.jl
 #+AUTHOR: Guilherme Gomes Haetinger
 
@@ -40,7 +40,7 @@ and blocking invalid ones that come from different parts of a program. This can
 help finding errors in other functionalities as soon as possible. Here is an
 example of a function that has prerequisites breached:
 
-#+BEGIN_SRC jupyter-julia
+#+BEGIN_SRC julia
 using DBC
 
 maxDictSize = 2
@@ -58,7 +58,7 @@ end
 #+RESULTS:
 : putItem! (generic function with 1 method)
 
-#+BEGIN_SRC jupyter-julia
+#+BEGIN_SRC julia
 fruits = Dict{String, Any}()
 
 putItem!(fruits, "apple", :red)
@@ -69,7 +69,7 @@ fruits
 : Dict{String,Any} with 1 entry:
 :   "apple" => :red
 
-#+BEGIN_SRC jupyter-julia
+#+BEGIN_SRC julia
 putItem!(fruits, "blueberry", :blue)
 fruits
 #+END_SRC
@@ -79,7 +79,7 @@ fruits
 :   "apple"     => :red
 :   "blueberry" => :blue
 
-#+BEGIN_SRC jupyter-julia
+#+BEGIN_SRC julia
 putItem!(fruits, "", :purple)
 #+END_SRC
 
@@ -93,7 +93,7 @@ putItem!(fruits, "", :purple)
 :  [2] top-level scope at In[18]:1
 :END:
 
-#+BEGIN_SRC jupyter-julia
+#+BEGIN_SRC julia
 delete!(fruits, "blueberry")
 putItem!(fruits, "", :purple)
 #+END_SRC
@@ -114,7 +114,7 @@ Post-conditions work to find errors inside the contracted function. It is also
 used to find errors easily and as soon as possible. Here is an example of a
 function that breaches its post-conditions:
 
-#+BEGIN_SRC jupyter-julia
+#+BEGIN_SRC julia
 
 minVal = 5
 
@@ -137,7 +137,7 @@ end
 #+RESULTS:
 : incrArr! (generic function with 1 method)
 
-#+BEGIN_SRC jupyter-julia
+#+BEGIN_SRC julia
 arr = collect(1:5)
 display(arr)
 incrArr!(arr)
@@ -160,7 +160,7 @@ arr
 :  6
 :END:
 
-#+BEGIN_SRC jupyter-julia
+#+BEGIN_SRC julia
 arr = collect(ones(Int64, 5))
 display(arr)
 incrArr!(arr)
@@ -183,7 +183,7 @@ arr
 :  2
 :END:
 
-#+BEGIN_SRC jupyter-julia
+#+BEGIN_SRC julia
 arr = collect(-1 .* ones(Int64, 5))
 display(arr)
 incrArr!(arr)
