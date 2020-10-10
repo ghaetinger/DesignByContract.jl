@@ -308,9 +308,7 @@ newProcessArr([2, 2, 2, 2])
 :  [2] top-level scope at In[16]:1
 :END:
 
-
 * TODOs
-** [ ] Add function invariant
 ** [ ] Add loop invariant
 ** [ ] Add old value call
 ** [ ] Enable assertion disabling for efficiency
