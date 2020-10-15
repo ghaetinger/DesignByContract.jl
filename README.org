@@ -310,6 +310,8 @@ newProcessArr([2, 2, 2, 2])
 
 * TODOs
 ** [ ] Add loop invariant
+*** [X] Add functionality
+*** [ ] Test Loop invariants
 ** [ ] Add old value call
 ** [ ] Enable assertion disabling for efficiency
 ** [ ] Add DocStrings
