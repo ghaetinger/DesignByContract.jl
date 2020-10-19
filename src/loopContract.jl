@@ -11,7 +11,13 @@ macro loopinvariant(expr...)
     loopAgreement = Agreement(loopInvariant, addLoopInvariant!, nothing)
     loopBody = nothing
     for item in expr
-        item.head in loopSym ? (loopBody = item;break) : push!(loopAgreement.expressions, item)
+        if typeof(item) == Expr
+            item.head in loopSym ? (loopBody = item;break) : push!(loopAgreement.expressions, item)
+        else
+            newExpr = Expr(:block)
+            newExpr.args = [item]
+            push!(loopAgreement.expressions, newExpr)
+        end
     end
     loopAgreement(loopBody)
     return loopBody |> esc

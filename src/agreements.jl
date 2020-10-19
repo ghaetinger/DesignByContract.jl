@@ -38,7 +38,7 @@ struct ContractBreachException <: Exception
 end
 
 function Base.showerror(io::IO, e::ContractBreachException)
-    print(io, e.breachMessage, " '", e.expression, "'")
+    print(io, "ContractBreachException: ", e.breachMessage, " '", e.expression, "'")
     if !isnothing(e.functionName)
         print(io, " in function '", e.functionName, "'")
     end

@@ -37,7 +37,7 @@ end
     catch e
         b = IOBuffer()
         showerror(b, e)
-        @test String(take!(b)) == "Breach on Requirement Expression 'a > 0' in function 'foo'"
+        @test String(take!(b)) == "ContractBreachException: Breach on Requirement Expression 'a > 0' in function 'foo'"
     end
 
     try
@@ -45,6 +45,6 @@ end
     catch e
         b = IOBuffer()
         showerror(b, e)
-        @test String(take!(b)) == "Breach on Ensure Expression 'b < a' in function 'flawedEnsureFoo'"
+        @test String(take!(b)) == "ContractBreachException: Breach on Ensure Expression 'b < a' in function 'flawedEnsureFoo'"
     end
 end
