@@ -44,7 +44,7 @@ function Base.showerror(io::IO, e::ContractBreachException)
     end
 end
 
-function contractHolds(agreement :: Agreement, expressionIndex :: Int64)
+function agreementHolds(agreement :: Agreement, expressionIndex :: Int64)
     contractExpression = agreement.expressions[expressionIndex]
     stringContractExpression = string(contractExpression)
     exceptionThrownExpression = :(throw(
@@ -64,5 +64,5 @@ end
 # Check Expressions list generation
 
 function createCheckExpressions(agreement :: Agreement)
-    return [contractHolds(agreement, i) for i in 1:length(agreement.expressions)]
+    return [agreementHolds(agreement, i) for i in 1:length(agreement.expressions)]
 end

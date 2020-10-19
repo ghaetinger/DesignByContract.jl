@@ -309,9 +309,12 @@ newProcessArr([2, 2, 2, 2])
 :END:
 
 * TODOs
-** [X] Add loop invariant
+** [ ] Add loop invariant
 *** [X] Add functionality
 *** [X] Test Loop invariants
+*** [ ] Add README entry
 ** [ ] Add old value call
+*** [ ] Add Agreement
+*** [ ] Add README entry
 ** [ ] Enable assertion disabling for efficiency
 ** [ ] Add DocStrings
