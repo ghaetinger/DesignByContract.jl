@@ -4,6 +4,9 @@
 [[https://travis-ci.com/github/GuilhermeHaetinger/DBC.jl][https://travis-ci.com/GuilhermeHaetinger/DBC.jl.svg?branch=main&status=passed]]
 [[https://codecov.io/gh/GuilhermeHaetinger/DBC.jl][https://codecov.io/gh/GuilhermeHaetinger/DBC.jl/branch/main/graph/badge.svg]]
 
+[[https://img.shields.io/badge/julia-%3E=1.5.0-blue.svg]]
+
+
 * Description
 This package provides an interface for *Design By Contract* programming in
 Julia. The method for software design was first introduced in the *Eiffel*
