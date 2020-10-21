@@ -33,7 +33,6 @@ pkg> add https://github.com/GuilhermeHaetinger/DBC.jl
 post-conditions and the contract's function.
 
 ** Prerequisites
-
 Prerequisites have the unique goal of filtering the arguments of the function
 and blocking invalid ones that come from different parts of a program. This can
 help finding errors in other functionalities as soon as possible. Here is an
@@ -308,13 +307,58 @@ newProcessArr([2, 2, 2, 2])
 :  [2] top-level scope at In[16]:1
 :END:
 
+** Loop Invariant
+Loop invariant is a functionality to help writing loops in a way that you don't
+really have to check for =exit= conditions after every *shallow layer*
+expressions. Take this example:
+
+#+BEGIN_SRC julia :session dbc :result output :exports both
+@macroexpand @loopinvariant (a>0) while(a > 10)
+           a -= 10; a=2
+end
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+quote
+    if a > 0
+        nothing
+    else
+        throw(ContractBreachException(nothing, "a > 0", "Breach on Loop Invariant Expression"))
+    end
+    while a > 10
+        #= In[3]:2 =#
+        if a > 0
+            nothing
+        else
+            throw(ContractBreachException(nothing, "a > 0", "Breach on Loop Invariant Expression"))
+        end
+        a -= 10
+        if a > 0
+            nothing
+        else
+            throw(ContractBreachException(nothing, "a > 0", "Breach on Loop Invariant Expression"))
+        end
+        #= In[3]:2 =#
+        if a > 0
+            nothing
+        else
+            throw(ContractBreachException(nothing, "a > 0", "Breach on Loop Invariant Expression"))
+        end
+        a = 2
+    end
+end
+#+end_example
+
+This way, you'll check the conditions in every shallow point inside the loop.
+
 * TODOs
-** [ ] Add loop invariant
+** [X] Add loop invariant
 *** [X] Add functionality
 *** [X] Test Loop invariants
-*** [ ] Add README entry
+*** [X] Add README entry
 ** [ ] Add old value call
 *** [ ] Add Agreement
 *** [ ] Add README entry
 ** [ ] Enable assertion disabling for efficiency
-** [ ] Add DocStrings
+** [X] Add DocStrings

@@ -65,7 +65,37 @@ function seekFunctionDefinition(expressions)
     end
 end
 
-# Contract macro
+"""
+@contract
+
+Take in a :block expression and define a function wraped inside its contract. A
+contract is defined by "require" expressions and "ensure" expressions. It will
+constrain function calls and returns to have specific user defined conditions
+(It'll wrap the code with "if" statements).
+
+```julia-repl
+
+julia> @contract begin
+           require(a>=-1)
+           ensure(result>0)
+           function foo(a)
+               return a+1
+           end
+       end
+foo (generic function with 1 method)
+
+julia> foo(-2)
+ERROR: ContractBreachException: Breach on Requirement Expression 'a >= -1' in function 'foo'
+...
+
+julia> foo(-1)
+ERROR: ContractBreachException: Breach on Ensure Expression 'result > 0' in function 'foo'
+...
+
+julia> foo(0)
+1
+```
+"""
 macro contract(expr)
     @assert expr.head == :block
     functionExpr = seekFunctionDefinition(expr.args)
