@@ -6,7 +6,6 @@
 
 [[https://img.shields.io/badge/julia-%3E=1.5.0-blue.svg]]
 
-
 * Description
 This package provides an interface for *Design By Contract* programming in
 Julia. The method for software design was first introduced in the *Eiffel*
