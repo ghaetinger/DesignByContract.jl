@@ -1,4 +1,4 @@
-using DBC
+using DesignByContract
 using Test
 
 # Function Contracts

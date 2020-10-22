@@ -1,4 +1,4 @@
-module DBC
+module DesignByContract
 using MacroTools
 include("./agreements.jl")
 include("./functionContract.jl")

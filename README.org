@@ -1,8 +1,8 @@
-#+TITLE:  DBC.jl
+#+TITLE:  DesignByContract.jl
 #+AUTHOR: Guilherme Gomes Haetinger
 
-[[https://travis-ci.com/github/GuilhermeHaetinger/DBC.jl][https://travis-ci.com/GuilhermeHaetinger/DBC.jl.svg?branch=main&status=passed]]
-[[https://codecov.io/gh/GuilhermeHaetinger/DBC.jl][https://codecov.io/gh/GuilhermeHaetinger/DBC.jl/branch/main/graph/badge.svg]]
+[[https://travis-ci.com/github/GuilhermeHaetinger/DBC.jl][https://travis-ci.com/GuilhermeHaetinger/DesignByContract.jl.svg?branch=main&status=passed]]
+[[https://codecov.io/gh/GuilhermeHaetinger/DBC.jl][https://codecov.io/gh/GuilhermeHaetinger/DesignByContract.jl/branch/main/graph/badge.svg]]
 
 [[https://img.shields.io/badge/julia-%3E=1.5.0-blue.svg]]
 
@@ -27,12 +27,12 @@ This package hasn't been added to the main Julia repository yet. To use it, one
 must run:
 
 #+BEGIN_SRC
-pkg> add https://github.com/GuilhermeHaetinger/DBC.jl
+pkg> add https://github.com/GuilhermeHaetinger/DesignByContract.jl
 #+END_SRC
 
 * Usage
 
-*DBC.jl* works by processing a block containing the prerequisites,
+*DesignByContract.jl* works by processing a block containing the prerequisites,
 post-conditions and the contract's function.
 
 ** Prerequisites
@@ -42,7 +42,7 @@ help finding errors in other functionalities as soon as possible. Here is an
 example of a function that has prerequisites breached:
 
 #+BEGIN_SRC julia :session dbc :result output :exports both
-using DBC
+using DesignByContract
 
 maxDictSize = 2
 

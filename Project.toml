@@ -1,4 +1,4 @@
-name = "DBC"
+name = "DesignByContract"
 uuid = "f7061e56-6fd0-4c74-abcd-d8e268924101"
 authors = ["Guilherme Haetinger <ghaetinger@gmail.com>"]
 version = "0.1.0"
