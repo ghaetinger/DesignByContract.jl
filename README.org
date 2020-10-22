@@ -364,4 +364,5 @@ This way, you'll check the conditions in every shallow point inside the loop.
 *** [ ] Add Agreement
 *** [ ] Add README entry
 ** [ ] Enable assertion disabling for efficiency
+** [ ] Encapsulate expressions in one if clausule
 ** [X] Add DocStrings
