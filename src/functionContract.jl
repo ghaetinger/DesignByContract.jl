@@ -7,7 +7,11 @@ function findCustomReturnName(expression)
     if length(returnNameExpr) == 0
         return returnAssignmentName
     elseif length(returnNameExpr) != 1 || typeof(returnNameExpr[1]) != Symbol
-        throw(ArgumentError("Custom Return names should be added in the format 'resultName = \$customName'"))
+        throw(ArgumentError(
+"""
+Custom Return names should be added in the format 'resultName = \$customName'
+"""
+                            ))
     else
         return returnNameExpr[1]
     end
@@ -15,7 +19,8 @@ end
 
 # Expression list setup by Agreement
 
-function getAgreementsFromExpressions(agreementType :: Symbol, head :: Symbol, expressions)
+function getAgreementsFromExpressions(agreementType :: Symbol, head :: Symbol,
+                                      expressions)
     conditions = []
     for expr in expressions
         if typeof(expr) == Expr &&
@@ -40,9 +45,11 @@ function addRequirements!(functionBody :: Expr, agreement :: Agreement)
     pushfirst!(functionBody.args, start...)
 end
 
-function addEnsures!(functionBody :: Expr, agreement :: Agreement, returnName :: Symbol)
+function addEnsures!(functionBody :: Expr, agreement :: Agreement,
+                     returnName :: Symbol)
     finish = createCheckExpressions(agreement)
     push!(finish, :(return $returnName))
+    # Look for "return" keywords and replace them
     newFunctionBody = MacroTools.postwalk(functionBody) do x
         @capture(x, return a_) || return x
         newReturn = Expr(:block)
@@ -53,7 +60,9 @@ function addEnsures!(functionBody :: Expr, agreement :: Agreement, returnName ::
     functionBody.head = newFunctionBody.head
 end
 
-generateEnsureFunction(returnName :: Symbol) = (x, y) -> addEnsures!(x, y, returnName)
+function generateEnsureFunction(returnName :: Symbol)
+    return (x, y) -> addEnsures!(x, y, returnName)
+end
 
 # Finding function
 
@@ -99,16 +108,18 @@ julia> foo(0)
 macro contract(expr)
     @assert expr.head == :block
     functionExpr = seekFunctionDefinition(expr.args)
-    @assert typeof(functionExpr) == Expr "Check the arguments previous to the function declaration!"
+    @assert typeof(functionExpr) == Expr """
+Check the arguments previous to the function declaration!
+"""
     functionName = string(functionExpr.args[1].args[1])
     functionBody = functionExpr.args[2]
 
     returnName = findCustomReturnName(expr.args)
 
-    agreements = Dict(
-        require => Agreement(require, addRequirements!, functionName),
-        ensure => Agreement(ensure, generateEnsureFunction(returnName), functionName),
-    )
+    agreements = [
+        Agreement(require, addRequirements!, functionName),
+        Agreement(ensure, generateEnsureFunction(returnName), functionName),
+    ]
 
     for agreement in values(agreements)
         lookAndFillType(agreement, expr)
