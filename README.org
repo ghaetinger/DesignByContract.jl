@@ -1,8 +1,8 @@
 #+TITLE:  DesignByContract.jl
 #+AUTHOR: Guilherme Gomes Haetinger
 
-[[https://travis-ci.com/github/GuilhermeHaetinger/DBC.jl][https://travis-ci.com/GuilhermeHaetinger/DesignByContract.jl.svg?branch=main&status=passed]]
-[[https://codecov.io/gh/GuilhermeHaetinger/DBC.jl][https://codecov.io/gh/GuilhermeHaetinger/DesignByContract.jl/branch/main/graph/badge.svg]]
+[[https://travis-ci.com/github/GuilhermeHaetinger/DesignByContract.jl][https://travis-ci.com/GuilhermeHaetinger/DesignByContract.jl.svg?branch=main&status=passed]]
+[[https://codecov.io/gh/GuilhermeHaetinger/DesignByContract.jl][https://codecov.io/gh/GuilhermeHaetinger/DesignByContract.jl/branch/main/graph/badge.svg]]
 
 [[https://img.shields.io/badge/julia-%3E=1.5.0-blue.svg]]
 
