@@ -4,6 +4,8 @@
     loopInvariant
 end
 
+AgreementsEnabled = true
+
 agreementBreachMessage = Dict(
                           require => "Breach on Requirement Expression",
                           ensure => "Breach on Ensure Expression",
@@ -28,7 +30,7 @@ function Agreement(agreementType :: AgreementType,
 end
 
 function (agreement::Agreement)(functionBody::Expr)
-    agreement.processFunction(functionBody, agreement)
+    AgreementsEnabled ? agreement.processFunction(functionBody, agreement) : functionBody
 end
 
 struct ContractBreachException <: Exception
@@ -39,7 +41,7 @@ end
 
 function Base.showerror(io::IO, e::ContractBreachException)
     print(io, "ContractBreachException: ", e.breachMessage, " '", e.expression, "'")
-    if !isnothing(e.functionName)
+    if e.functionName != nothing
         print(io, " in function '", e.functionName, "'")
     end
 end
@@ -65,4 +67,9 @@ end
 
 function createCheckExpressions(agreement :: Agreement)
     return [agreementHolds(agreement, i) for i in 1:length(agreement.expressions)]
+end
+
+function setAgreementEnabling(bool :: Bool)
+    global AgreementsEnabled
+    AgreementsEnabled = bool
 end

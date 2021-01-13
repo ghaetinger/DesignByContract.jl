@@ -4,6 +4,6 @@ include("./agreements.jl")
 include("./functionContract.jl")
 include("./loopContract.jl")
 
-export @contract, @loopinvariant, ContractBreachException
+export @contract, @loopinvariant, setAgreementEnabling, ContractBreachException
 
 end # module

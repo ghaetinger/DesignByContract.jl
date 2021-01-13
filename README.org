@@ -1,11 +1,6 @@
 #+TITLE:  DesignByContract.jl
 #+AUTHOR: Guilherme Gomes Haetinger
 
-[[https://travis-ci.com/github/GuilhermeHaetinger/DesignByContract.jl][https://travis-ci.com/GuilhermeHaetinger/DesignByContract.jl.svg?branch=main&status=passed]]
-[[https://codecov.io/gh/GuilhermeHaetinger/DesignByContract.jl][https://codecov.io/gh/GuilhermeHaetinger/DesignByContract.jl/branch/main/graph/badge.svg]]
-
-[[https://img.shields.io/badge/julia-%3E=1.5.0-blue.svg]]
-
 * Description
 This package provides an interface for *Design By Contract* programming in
 Julia. The method for software design was first introduced in the *Eiffel*
@@ -26,7 +21,7 @@ This package hasn't been added to the main Julia repository yet. To use it, one
 must run:
 
 #+BEGIN_SRC
-pkg> add https://github.com/GuilhermeHaetinger/DesignByContract.jl
+pkg> add https://gitlab.com/ghaetinger/DesignByContract-jl
 #+END_SRC
 
 * Usage
@@ -353,6 +348,35 @@ end
 #+end_example
 
 This way, you'll check the conditions in every shallow point inside the loop.
+** Check Disabling
+When considering your staging code, you should be using the condition check at
+all times. Some might say that this should also be taken to the deployed code.
+_Andrew Hunt_ and _David Thomas_ (Pragmatic Programmer, 1999), say that the
+Design by Contract methodology should be used in running production code, as
+finding flaws in user runtime is better than not finding flaws at all.
+
+However, the amount of checks can scale with the amount of functions, loops and
+returns, meaning the efficiency might drop considerably or just a little bit.
+Since *Julia* is all about efficiency, we added a function call that disables
+the expression check filling. There might still be an efficiency decrease in
+*@loopInvariant* calls, but it's constant.
+
+You might want to do this as follows:
+
+#+BEGIN_SRC julia-repl :session dbc :result output :exports both
+julia> @time @loopinvariant (a >= 0) for i = 1:100000000
+                   a += 1
+               end
+  6.006486 seconds (100.00 M allocations: 1.490 GiB, 1.30% gc time)
+
+julia> setAgreementEnabling(false)
+false
+
+julia> @time @loopinvariant (a >= 0) for i = 1:100000000
+                   a += 1
+               end
+  2.812840 seconds (100.00 M allocations: 1.490 GiB, 2.97% gc time)
+#+END_SRC
 
 * TODOs
 ** [X] Add loop invariant
@@ -362,6 +386,6 @@ This way, you'll check the conditions in every shallow point inside the loop.
 ** [ ] Add old value call
 *** [ ] Add Agreement
 *** [ ] Add README entry
-** [ ] Enable assertion disabling for efficiency
-** [ ] Encapsulate expressions in one if clausule
+** [X] Enable assertion disabling for efficiency
+** [ ] Encapsulate expressions in one if clause
 ** [X] Add DocStrings
