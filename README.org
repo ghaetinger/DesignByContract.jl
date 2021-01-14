@@ -26,7 +26,7 @@ This package hasn't been added to the main Julia repository yet. To use it, one
 must run:
 
 #+BEGIN_SRC
-pkg> add https://gitlab.com/ghaetinger/DesignByContract-jl
+pkg> add https://github.com/GuilhermeHaetinger/DesignByContract.jl
 #+END_SRC
 
 * Usage
