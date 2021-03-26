@@ -392,5 +392,4 @@ julia> @time @loopinvariant (a >= 0) for i = 1:100000000
 *** [ ] Add Agreement
 *** [ ] Add README entry
 ** [X] Enable assertion disabling for efficiency
-** [ ] Encapsulate expressions in one if clause
 ** [X] Add DocStrings
