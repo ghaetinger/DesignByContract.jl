@@ -2,7 +2,7 @@
 #+AUTHOR: Guilherme Gomes Haetinger
 
 [[https://travis-ci.com/github/ghaetinger/DesignByContract.jl][https://travis-ci.com/ghaetinger/DesignByContract.jl.svg?branch=main&status=passed]]
-[[https://codecov.io/gh/ghaetinger/DesignByContract.jl][https://codecov.io/gh/ghaetinger/DesignByContract.jl/branch/main/graph/badge.svg]]
+[[https://coveralls.io/github/ghaetinger/DesignByContract.jl][https://coveralls.io/repos/github/ghaetinger/DesignByContract.jl/badge.svg?branch=main]]
 
 [[https://img.shields.io/badge/julia-%3E=1.5.0-blue.svg]]
 
