@@ -51,7 +51,8 @@ end
     catch e
         b = IOBuffer()
         showerror(b, e)
-        @test String(take!(b)) == "ContractBreachException: Breach on Loop Invariant Expression 'a >= 5'"
+        @test String(take!(b)) ==
+              "ContractBreachException: Breach on Loop Invariant Expression 'a >= 5'"
     end
 
     try
@@ -63,6 +64,7 @@ end
     catch e
         b = IOBuffer()
         showerror(b, e)
-        @test String(take!(b)) == "ContractBreachException: Breach on Loop Invariant Expression 'a == 0'"
+        @test String(take!(b)) ==
+              "ContractBreachException: Breach on Loop Invariant Expression 'a == 0'"
     end
 end

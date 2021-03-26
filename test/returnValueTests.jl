@@ -1,7 +1,7 @@
 @contract begin
     require(b > 0)
     ensure(toReturn >= 1)
-    function flawedReturnDiv(a :: Int64, b :: Int64)
+    function flawedReturnDiv(a::Int64, b::Int64)
         return a / b
     end
 end
@@ -10,7 +10,7 @@ end
     require(b > 0)
     ensure(toReturn >= 1)
     returnName = toReturn
-    function fixedDiv(a :: Int64, b :: Int64)
+    function fixedDiv(a::Int64, b::Int64)
         return a / b
     end
 end
@@ -45,7 +45,7 @@ end
 
 wrongReturnNameExpr = quote
     @contract begin
-        returnName = x -> x+2
+        returnName = x -> x + 2
         function stub()
             return 2
         end
@@ -72,7 +72,7 @@ end
 
 @contract begin
     ensure(result >= 0)
-    function wrongNestedValue(;x=0, y=0)
+    function wrongNestedValue(; x = 0, y = 0)
         if x == 0
             return 0
         elseif x == 1
@@ -87,8 +87,8 @@ end
 end
 
 @testset "Nested returns" begin
-    @test_throws ContractBreachException wrongNestedValue(x=1, y=1)
-    @test_throws ContractBreachException wrongNestedValue(x=2)
+    @test_throws ContractBreachException wrongNestedValue(x = 1, y = 1)
+    @test_throws ContractBreachException wrongNestedValue(x = 2)
     @test wrongNestedValue() == 0
-    @test wrongNestedValue(x=1) == 0
+    @test wrongNestedValue(x = 1) == 0
 end

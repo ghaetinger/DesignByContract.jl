@@ -4,10 +4,13 @@ function addLoopInvariant!(loopBody::Expr, agreement::Agreement)
     check = createCheckExpressions(agreement)
     newExpr = Expr(:block)
     newExpr.args = loopBody.args[2].args
-    (x->newExpr.args = [
-        newExpr.args[1:x-1];
-        check;
-        newExpr.args[x:end]]).(2:2:length(newExpr.args)+2)
+    (
+        x -> newExpr.args = [
+            newExpr.args[1:x-1]
+            check
+            newExpr.args[x:end]
+        ]
+    ).(2:2:length(newExpr.args)+2)
 
     innerExpr = copy(loopBody)
     innerExpr.args = [loopBody.args[1], newExpr]
@@ -57,7 +60,8 @@ macro loopinvariant(expr...)
     loopBody = nothing
     for item in expr
         if typeof(item) == Expr
-            item.head in loopSym ? (loopBody = item;break) : push!(loopAgreement.expressions, item)
+            item.head in loopSym ? (loopBody = item; break) :
+            push!(loopAgreement.expressions, item)
         else
             newExpr = Expr(:block)
             newExpr.args = [item]

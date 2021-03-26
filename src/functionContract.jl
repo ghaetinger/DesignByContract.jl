@@ -19,7 +19,7 @@ end
 
 # Expression list setup by Agreement
 
-function getAgreementsFromExpressions(agreementType :: Symbol, head :: Symbol,
+function getAgreementsFromExpressions(agreementType::Symbol, head::Symbol,
                                       expressions)
     conditions = []
     for expr in expressions
@@ -31,7 +31,7 @@ function getAgreementsFromExpressions(agreementType :: Symbol, head :: Symbol,
     return conditions
 end
 
-function lookAndFillType(agreement :: Agreement,
+function lookAndFillType(agreement::Agreement,
                          topExpr)
     typeSym = Symbol(agreement.type)
     conditions = getAgreementsFromExpressions(typeSym, :call, topExpr.args)
@@ -40,13 +40,13 @@ end
 
 # Agreement setups on function Body
 
-function addRequirements!(functionBody :: Expr, agreement :: Agreement)
+function addRequirements!(functionBody::Expr, agreement::Agreement)
     start = createCheckExpressions(agreement)
     pushfirst!(functionBody.args, start...)
 end
 
-function addEnsures!(functionBody :: Expr, agreement :: Agreement,
-                     returnName :: Symbol)
+function addEnsures!(functionBody::Expr, agreement::Agreement,
+                     returnName::Symbol)
     finish = createCheckExpressions(agreement)
     push!(finish, :(return $returnName))
     # Look for "return" keywords and replace them
@@ -60,7 +60,7 @@ function addEnsures!(functionBody :: Expr, agreement :: Agreement,
     functionBody.head = newFunctionBody.head
 end
 
-function generateEnsureFunction(returnName :: Symbol)
+function generateEnsureFunction(returnName::Symbol)
     return (x, y) -> addEnsures!(x, y, returnName)
 end
 

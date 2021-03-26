@@ -3,7 +3,7 @@ setAgreementEnabling(false)
 @contract begin
     require(a > 0, b > a, c)
     ensure(b < a, a < 0, !c)
-    function foo(a :: Int64, b :: Int64, c :: Bool)
+    function foo(a::Int64, b::Int64, c::Bool)
         a *= -1
         b *= -1
         c = !c
@@ -15,7 +15,7 @@ end
 @contract begin
     require(a > 0, b > a, c)
     ensure(b < a, a > b, !c)
-    function flawedEnsureFoo(a :: Int64, b :: Int64, c :: Bool)
+    function flawedEnsureFoo(a::Int64, b::Int64, c::Bool)
         a -= 2
         b += 2
         c = true

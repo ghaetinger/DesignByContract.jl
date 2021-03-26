@@ -1,7 +1,7 @@
 @contract begin
     require(a > 0, b > a, c)
     ensure(b < a, a < 0, !c)
-    function foo(a :: Int64, b :: Int64, c :: Bool)
+    function foo(a::Int64, b::Int64, c::Bool)
         a *= -1
         b *= -1
         c = !c
@@ -13,7 +13,7 @@ end
 @contract begin
     require(a > 0, b > a, c)
     ensure(b < a, a > b, !c)
-    function flawedEnsureFoo(a :: Int64, b :: Int64, c :: Bool)
+    function flawedEnsureFoo(a::Int64, b::Int64, c::Bool)
         a -= 2
         b += 2
         c = true
@@ -37,7 +37,8 @@ end
     catch e
         b = IOBuffer()
         showerror(b, e)
-        @test String(take!(b)) == "ContractBreachException: Breach on Requirement Expression 'a > 0' in function 'foo'"
+        @test String(take!(b)) ==
+              "ContractBreachException: Breach on Requirement Expression 'a > 0' in function 'foo'"
     end
 
     try
@@ -45,6 +46,7 @@ end
     catch e
         b = IOBuffer()
         showerror(b, e)
-        @test String(take!(b)) == "ContractBreachException: Breach on Ensure Expression 'b < a' in function 'flawedEnsureFoo'"
+        @test String(take!(b)) ==
+              "ContractBreachException: Breach on Ensure Expression 'b < a' in function 'flawedEnsureFoo'"
     end
 end
