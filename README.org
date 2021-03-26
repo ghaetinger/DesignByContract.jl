@@ -1,8 +1,8 @@
 #+TITLE:  DesignByContract.jl
 #+AUTHOR: Guilherme Gomes Haetinger
 
-[[https://travis-ci.com/github/GuilhermeHaetinger/DesignByContract.jl][https://travis-ci.com/GuilhermeHaetinger/DesignByContract.jl.svg?branch=main&status=passed]]
-[[https://codecov.io/gh/GuilhermeHaetinger/DesignByContract.jl][https://codecov.io/gh/GuilhermeHaetinger/DesignByContract.jl/branch/main/graph/badge.svg]]
+[[https://travis-ci.com/github/ghaetinger/DesignByContract.jl][https://travis-ci.com/ghaetinger/DesignByContract.jl.svg?branch=main&status=passed]]
+[[https://codecov.io/gh/ghaetinger/DesignByContract.jl][https://codecov.io/gh/ghaetinger/DesignByContract.jl/branch/main/graph/badge.svg]]
 
 [[https://img.shields.io/badge/julia-%3E=1.5.0-blue.svg]]
 
@@ -26,7 +26,7 @@ This package hasn't been added to the main Julia repository yet. To use it, one
 must run:
 
 #+BEGIN_SRC
-pkg> add https://github.com/GuilhermeHaetinger/DesignByContract.jl
+pkg> add https://github.com/ghaetinger/DesignByContract.jl
 #+END_SRC
 
 * Usage
