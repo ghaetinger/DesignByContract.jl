@@ -13,3 +13,4 @@ include("./loopInnerVarianceTests.jl")
 
 # Agreement Disabling
 include("./agreementDisablingTests.jl")
+include("./changesetTests.jl")

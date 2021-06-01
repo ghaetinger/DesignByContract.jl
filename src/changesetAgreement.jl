@@ -2,7 +2,7 @@ struct Changeset{T}
     value :: T
     types :: Dict
     changes :: Base.Iterators.Pairs 
-    errors :: Vector
+    errors :: Vector{Tuple{Symbol, String}}
     isValid :: Bool
 end
 
@@ -12,7 +12,7 @@ end
 
 function Base.show(io :: IO, exception :: InvalidChangesetException)
     println(io, "Invalid Changeset")
-    show(io, exception.errors)
+    show(io, exception.changeset.errors)
 end
 
 function Base.show(io::IO, m::Changeset{T}) where T
@@ -54,7 +54,7 @@ function castFields(object :: T; args...) :: Changeset{T} where T
     for key in keys(args)
         if !(haskey(nameTypeDict, key)) || typeof(args[key]) != nameTypeDict[key]
             isValid = false
-            append!(errors, (key, "Invalid cast"))
+            errors = vcat(errors, [(key, "Invalid cast")])
         end
     end
     return Changeset{T}(
