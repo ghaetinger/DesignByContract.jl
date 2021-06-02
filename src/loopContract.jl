@@ -3,14 +3,7 @@ loopSym = [:while, :for]
 function addLoopInvariant!(loopBody::Expr, agreement::Agreement)
     check = createCheckExpressions(agreement)
     newExpr = Expr(:block)
-    newExpr.args = loopBody.args[2].args
-    (
-        x -> newExpr.args = [
-            newExpr.args[1:x-1]
-            check
-            newExpr.args[x:end]
-        ]
-    ).(2:2:length(newExpr.args)+2)
+    newExpr.args = [loopBody.args[2].args; check]
 
     innerExpr = copy(loopBody)
     innerExpr.args = [loopBody.args[1], newExpr]
