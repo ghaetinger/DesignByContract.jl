@@ -9,7 +9,6 @@ include("./inputExpressionTests.jl")
 # Loop Invariants
 include("./loopAssertionTests.jl")
 include("./loopInputExpressionsTests.jl")
-include("./loopInnerVarianceTests.jl")
 
 # Agreement Disabling
 include("./agreementDisablingTests.jl")
