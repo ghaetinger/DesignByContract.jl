@@ -1,9 +1,10 @@
 module DesignByContract
-using MacroTools
+using MacroTools, Parameters
 include("./agreements.jl")
 include("./functionContract.jl")
 include("./loopContract.jl")
+include("./structureInvariant.jl")
 
-export @contract, @loopinvariant, setAgreementEnabling, ContractBreachException
+export @contract, @loopinvariant, @structInvariant, initialize, change, setDefaultStructureName, setAgreementEnabling, ContractBreachException
 
 end # module
