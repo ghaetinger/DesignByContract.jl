@@ -49,12 +49,11 @@ macro structInvariant(expr...)
     structureAgreement(structExpr)
 end
 
-function change(structure :: Any;)
-    error("`change` not implemented for $(typeof(structure))")
+function change(structure :: Any; changes...)
+    error("`change` not implemented for $(structure)")
 end
 
 function initialize(mod :: Type; changes...)
     structure = mod(;changes...)
-    # TODO: Find a way to use a global scoped function
     return change(structure;)
 end

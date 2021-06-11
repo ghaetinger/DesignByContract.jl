@@ -66,3 +66,17 @@ end
     @test initialize(NewCoolStructure; a=1) == NewCoolStructure(1)
     @test_throws UndefVarError initialize(WrongCoolStructure; a=1)
 end
+
+struct SampleStruct
+    a :: Int64
+end
+
+@testset "Shows error when change isn't implemented for structure" begin
+    try
+        change(SampleStruct; a = 10)
+    catch e
+        b = IOBuffer()
+        showerror(b, e)
+        @test String(take!(b)) == "`change` not implemented for SampleStruct"
+    end
+end
