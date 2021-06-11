@@ -10,5 +10,8 @@ include("./inputExpressionTests.jl")
 include("./loopAssertionTests.jl")
 include("./loopInputExpressionsTests.jl")
 
+# Structure Invariants
+include("./structInvariantTests.jl")
+
 # Agreement Disabling
 include("./agreementDisablingTests.jl")
