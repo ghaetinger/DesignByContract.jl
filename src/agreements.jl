@@ -44,6 +44,7 @@ struct ContractBreachException <: Exception
     name::Union{String,Nothing}
     expression::String
     breachMessage::String
+    # TODO: Add agreement type for a better error message
 end
 
 function Base.showerror(io::IO, e::ContractBreachException)
