@@ -12,3 +12,6 @@ include("./loopInputExpressionsTests.jl")
 
 # Agreement Disabling
 include("./agreementDisablingTests.jl")
+
+# Changeset
+include("./changesetTests.jl")
